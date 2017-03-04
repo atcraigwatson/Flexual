@@ -1,0 +1,450 @@
+// Flexual Setup.
+$column-count                         : 12   !default;
+
+$spacer                               : 16px !default;
+
+$use-container-max-widths             : true !default;
+
+$use-utilities                        : true !default;
+
+$use-text-modifiers                   : true !default;
+
+$use-flexbox-modifier-justify-content : true !default;
+$use-flexbox-modifier-align-items     : true !default;
+$use-flexbox-modifier-align-content   : true !default;
+$use-flexbox-modifier-align-self      : true !default;
+$use-flexbox-modifier-order           : true !default;
+
+$use-wordpress-gallery-support        : true !default;
+
+$breakpoints : (
+  xs : 0, // Always 0 for mobile first.
+  sm : 576px,
+  md : 768px,
+  lg : 992px,
+  xl : 1200px
+) !default;
+
+$container-max-widths : (
+  sm : 540px,
+  md : 720px,
+  lg : 960px,
+  xl : 1140px
+) !default;
+
+$utility-sizes : (
+  1 : $spacer,
+  2 : $spacer * 2,
+  3 : $spacer * 3
+) !default;
+
+$utility-types : (
+	p : "padding",
+	m : "margin"
+) !default;
+
+$text-modifiers : (
+	l : left,
+	r : right,
+	c : center
+) !default;
+
+//-------------------------------------------------------------------------------------//
+// The below should not be edited!
+//-------------------------------------------------------------------------------------//
+
+$utility-directions : (
+	t : "top",
+	r : "right",
+	b : "bottom",
+	l : "left",
+	x : "horizontal",
+	y : "vertical",
+	a : "all"
+) !default;
+
+$mod-justify-content : (
+  justify-start    : "flex-start",
+  justify-end      : "flex-end",
+  justify-center   : "center",
+  justify-around   : "space-around",
+  justify-between  : "space-between"
+) !default;
+$mod-align-items : (
+  items-start      : "flex-start",
+  items-end        : "flex-end",
+  items-center     : "center",
+  items-baseline   : "baseline",
+  items-stretch    : "stretch"
+) !default;
+$mod-align-content : (
+  content-start    : "flex-start",
+  content-end      : "flex-end",
+  content-center   : "center",
+  content-around   : "space-around",
+  content-between  : "space-between"
+) !default;
+$mod-align-self : (
+  self-auto        : "auto",
+  self-start       : "flex-start",
+  self-end         : "flex-end",
+  self-center      : "center",
+  self-baseline    : "baseline",
+  self-stretch     : "stretch"
+) !default;
+$mod-order : (
+  order-first      : -1,
+  order-last       : 1
+) !default;
+
+
+// Function to create Flexual col widths on the fly
+@function flexual_MakeColWidth($col-width) {
+  @return unquote((100 / $column-count) * $col-width+"%");
+}
+
+
+// Extract the flexbox modifiers.
+@mixin flexual_ExtractFlexboxModifier($mod-map, $breakpoint) {
+  @each $class, $value in $mod-map {
+    @if $breakpoint == xs {
+      .#{$class} {
+        justify-content: #{$value};
+      }
+    } @else {
+      .#{$class}-#{$breakpoint} {
+        justify-content: #{$value};
+      }
+    }
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+// Create a wrapper mixin to include at the most appropriate point in the cascade
+@mixin doFlexual() {
+
+    // Mobile first Container classes
+	@if $use-container-max-widths {
+
+		.container {
+			position: relative;
+			margin-left: auto;
+			margin-right: auto;
+			padding-right: $spacer;
+			padding-left: $spacer;
+		}
+
+		.container-fluid {
+			position: relative;
+			margin-left: auto;
+			margin-right: auto;
+			padding-right: $spacer;
+			padding-left: $spacer;
+			max-width: none;
+		}
+
+	} @else {
+
+		.container {
+			position: relative;
+			margin-left: auto;
+			margin-right: auto;
+			padding-right: $spacer;
+			padding-left: $spacer;
+			max-width: none;
+		}
+
+	}
+
+    // Mobile first Row classes with optional WordPress gallery support
+    @if $use-wordpress-gallery-support {
+
+        .gallery,
+        .flex-row {
+            display: flex;
+            flex-wrap: wrap;
+            margin-right: -$spacer;
+            margin-left: -$spacer;
+        }
+
+    } @else {
+
+        .flex-row {
+            display: flex;
+            flex-wrap: wrap;
+            margin-right: -$spacer;
+            margin-left: -$spacer;
+        }
+
+    }
+
+	.flex-column {
+		display: flex;
+		flex-direction: column;
+		flex-wrap: wrap;
+		margin-right: -$spacer;
+		margin-left: -$spacer;
+	}
+
+	.flex-row.reverse {
+		flex-direction: row-reverse;
+	}
+
+	.flex-column.reverse {
+		flex-direction: column-reverse;
+	}
+
+	@if $use-wordpress-gallery-support {
+
+		.gallery > .gallery-item {
+			margin: 0;
+			padding: 0;
+			text-align: center;
+		}
+
+	}
+
+    // Mobile first Column classes
+	$column-class : null !default;
+
+	@for $i from 1 through $column-count {
+		@each $breakpoint, $value in $breakpoints {
+			@if $breakpoint == xs {
+				$column-class: append($column-class, unquote('.col-#{$i}'), 'comma');
+			} @else {
+				$column-class: append($column-class, unquote('.col-#{$breakpoint}-#{$i}'), 'comma');
+			}
+		}
+	}
+
+	@if $use-wordpress-gallery-support {
+
+		.gallery > .gallery-item,
+		#{$column-class} {
+			position: relative;
+			width: 100%;
+			min-height: 1px;
+			padding-right: $spacer;
+			padding-left: $spacer;
+		}
+
+	} @else {
+
+		#{$column-class} {
+			position: relative;
+			width: 100%;
+			min-height: 1px;
+			padding-right: $spacer;
+			padding-left: $spacer;
+		}
+
+	}
+
+	.no-gutters {
+
+  		> [class*="col-"] {
+    		padding-right: 0;
+    		padding-left: 0;
+  		}
+	}
+
+    @each $breakpoint, $width in $breakpoints {
+
+        @if $width == 0 {
+
+            @for $i from 1 through $column-count {
+
+				@if $use-wordpress-gallery-support and $i == $column-count {
+
+					.gallery-columns-1 .gallery-item,
+					.col-#{$i} {
+						flex: 0 0 flexual_MakeColWidth($i);
+						max-width: flexual_MakeColWidth($i);
+					}
+
+				} @else if $use-wordpress-gallery-support and $i == $column-count / 2 {
+
+					.gallery-columns-2 .gallery-item,
+					.col-#{$i} {
+						flex: 0 0 flexual_MakeColWidth($i);
+						max-width: flexual_MakeColWidth($i);
+					}
+
+				} @else if $use-wordpress-gallery-support and $i == $column-count / 3 {
+
+					.gallery-columns-3 .gallery-item,
+					.col-#{$i} {
+						flex: 0 0 flexual_MakeColWidth($i);
+						max-width: flexual_MakeColWidth($i);
+					}
+
+				} @else if $use-wordpress-gallery-support and $i == $column-count / 4 {
+
+					.gallery-columns-4 .gallery-item,
+					.col-#{$i} {
+						flex: 0 0 flexual_MakeColWidth($i);
+						max-width: flexual_MakeColWidth($i);
+					}
+
+				}
+
+                .col-#{$i} {
+                    flex: 0 0 flexual_MakeColWidth($i);
+                    max-width: flexual_MakeColWidth($i);
+                }
+
+            }
+
+			@if $use-flexbox-modifier-justify-content {
+				@include flexual_ExtractFlexboxModifier($mod-justify-content, $breakpoint);
+			}
+
+			@if $use-flexbox-modifier-justify-content {
+				@include flexual_ExtractFlexboxModifier($mod-align-items, $breakpoint);
+			}
+
+			@if $use-flexbox-modifier-justify-content {
+				@include flexual_ExtractFlexboxModifier($mod-align-content, $breakpoint);
+			}
+
+			@if $use-flexbox-modifier-justify-content {
+				@include flexual_ExtractFlexboxModifier($mod-align-self, $breakpoint);
+			}
+
+			@if $use-flexbox-modifier-justify-content {
+				@include flexual_ExtractFlexboxModifier($mod-order, $breakpoint);
+			}
+
+			@if $use-text-modifiers {
+
+				@each $text-mod, $alignment in $text-modifiers {
+
+					.text-#{$text-mod} {
+						text-align: #{$alignment};
+					}
+
+				}
+
+			}
+
+        } @else {
+
+            @media only screen and (min-width: $width ) {
+
+				@if $use-container-max-widths {
+
+					@each $container-max-width, $container-width in $container-max-widths {
+
+						@if $container-max-width == $breakpoint {
+
+							.container {
+								max-width: $container-width;
+							}
+
+						}
+
+					}
+
+				}
+
+                @for $i from 1 through $column-count {
+
+                    .col-#{$breakpoint}-#{$i} {
+                        flex: 0 0 flexual_MakeColWidth($i);
+                        max-width: flexual_MakeColWidth($i);
+                    }
+                }
+
+                @for $i from 1 through $column-count - 1 {
+
+                    .offset-#{$breakpoint}-#{$i} {
+                        margin-left: flexual_MakeColWidth($i);
+                    }
+                }
+
+				@if $use-flexbox-modifier-justify-content {
+					@include flexual_ExtractFlexboxModifier($mod-justify-content, $breakpoint);
+				}
+
+				@if $use-flexbox-modifier-justify-content {
+					@include flexual_ExtractFlexboxModifier($mod-align-items, $breakpoint);
+				}
+
+				@if $use-flexbox-modifier-justify-content {
+					@include flexual_ExtractFlexboxModifier($mod-align-content, $breakpoint);
+				}
+
+				@if $use-flexbox-modifier-justify-content {
+					@include flexual_ExtractFlexboxModifier($mod-align-self, $breakpoint);
+				}
+
+				@if $use-flexbox-modifier-justify-content {
+					@include flexual_ExtractFlexboxModifier($mod-order, $breakpoint);
+				}
+
+				@if $use-text-modifiers {
+
+					@each $text-mod, $alignment in $text-modifiers {
+
+						.text-#{$breakpoint}-#{$text-mod} {
+							text-align: #{$alignment};
+						}
+
+					}
+
+				}
+
+            }
+        }
+    }
+
+	@each $utility-type, $property in $utility-types {
+
+		@each $utility-size, $size in $utility-sizes {
+
+			@each $utility-direction, $direction in $utility-directions {
+
+				@if $utility-direction == "t" or $utility-direction == "r" or $utility-direction == "b" or $utility-direction == "l" {
+
+					.#{$utility-type}-#{$utility-direction}-#{$utility-size} {
+						#{$property}-#{$direction}: $size;
+					}
+
+				} @else if $utility-direction == "x" {
+
+					.#{$utility-type}-#{$utility-direction}-#{$utility-size} {
+						#{$property}: 0 $size;
+					}
+
+				} @else if $utility-direction == "y" {
+
+					.#{$utility-type}-#{$utility-direction}-#{$utility-size} {
+						#{$property}: $size 0;
+					}
+
+				} @else if $utility-direction == "a" {
+
+					.#{$utility-type}-#{$utility-direction}-#{$utility-size} {
+						#{$property}: $size;
+					}
+
+				}
+
+			}
+
+		}
+
+	}
+
+}
+@include doFlexual;
