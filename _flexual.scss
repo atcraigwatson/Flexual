@@ -1,24 +1,55 @@
-// Flexual Setup.
-// Use these variables to define your output CSS.
+// Flexual
+//
+// A flexbox layout module that uses Sass variables to customize the output.
+// ----------------------------------------------------------------------------------- //
 
+// Variables and Maps
+//
+// Use these variables to define your output CSS.
+// ----------------------------------------------------------------------------------- //
+
+// How many grid columns do you need? I reccommend 8, 12 or 16.
+// Flexual default = 12.
 $column-count                         : 12   !default;
 
-$spacer                               : 16px !default;
-
+// Do you want a max-width adding to the .container class at your breakpoints?
+// Flexual default = true.
 $use-container-max-widths             : true !default;
 
+// $spacer is used in the $utility-sizes map to calculate padding and margin sizes,
+// if you wish to use predefined sizes please edit the $utility-sizes map directly.
+// Flexual default = 1rem.
+$spacer                               : 1rem !default;
+
+// Do you want utility classes for padding and margin? e.g. .p-t-1 = padding-top: $spacer;
+// As mentioned with the $spacer, you can edit the $utility-sizes map directly should you
+// wish to change class names and sizes etc.
 $use-utilities                        : true !default;
 
+// Do you want utility class for aligning text at your given breakpoints? e.g. t-md-c =
+// text-align: center; at your "md" breakpoint specified in the $breakpoints map.
 $use-text-modifiers                   : true !default;
 
+// Do you want flexbox utility classes for spacing and alignment?
 $use-flexbox-modifier-justify-content : true !default;
 $use-flexbox-modifier-align-items     : true !default;
 $use-flexbox-modifier-align-content   : true !default;
 $use-flexbox-modifier-align-self      : true !default;
 $use-flexbox-modifier-order           : true !default;
 
+// Do you work with WordPress, why not add support for galleries.
 $use-wordpress-gallery-support        : true !default;
 
+// The $breakpoints map simply controls when you want your layout to adapt.
+// You can alter the key and value pairs apart from that of 0.
+// For 0 you can only alter the key, this is to preserve the mobile first approach.
+// An example would be:
+//    $breakpoints : (
+//        mobile  : 0, // Always 0 for mobile first.
+//   	  tablet  : 768px,
+//   	  laptop  : 992px,
+//   	  desktop : 1200px
+//     );
 $breakpoints : (
   xs : 0, // Always 0 for mobile first.
   sm : 576px,
@@ -27,6 +58,16 @@ $breakpoints : (
   xl : 1200px
 ) !default;
 
+// The $container-max-widths map should coinside with the $breakpoints map. So
+// at your responsive brreakpoint your container stays a certain width.
+// It should always be lower than its corresponding breakpoint.
+// In reference to the example of changing the $breakpoints map
+// An example of changing the container max widths would be:
+//    $container-max-widths : (
+//   	  tablet  : 720px,
+//   	  laptop  : 960px,
+//   	  desktop : 1140px
+//     );
 $container-max-widths : (
   sm : 540px,
   md : 720px,
@@ -34,17 +75,33 @@ $container-max-widths : (
   xl : 1140px
 ) !default;
 
+// The $utility-sizes map controls your padding and margin utility class sizes.
+// The default setup is to use the $spacer varibale to create your utilities.
+// However you can switch this up, an example would be:
+//    $utility-sizes : (
+//   	  5  : 5px,
+//   	  10 : 10px,
+//   	  20 : 20px
+//     );
 $utility-sizes : (
   1 : $spacer,
   2 : $spacer * 2,
   3 : $spacer * 3
 ) !default;
 
+// The $utility-types map controls which padding and margin utilities you want output.
+// You have the option of one of either, or both.
 $utility-types : (
 	p : "padding",
 	m : "margin"
 ) !default;
 
+// The $text-modifiers map controls which text utilities you want output.
+// You can choose any combination of the default three and you can edit the key if you
+// An example of changing the text modifiers would be:
+//    $text-modifiers : (
+//   	  center : center
+//     );
 $text-modifiers : (
 	l : left,
 	r : right,
@@ -72,6 +129,7 @@ $mod-justify-content : (
   justify-around   : "space-around",
   justify-between  : "space-between"
 ) !default;
+
 $mod-align-items : (
   items-start      : "flex-start",
   items-end        : "flex-end",
@@ -79,6 +137,7 @@ $mod-align-items : (
   items-baseline   : "baseline",
   items-stretch    : "stretch"
 ) !default;
+
 $mod-align-content : (
   content-start    : "flex-start",
   content-end      : "flex-end",
@@ -86,6 +145,7 @@ $mod-align-content : (
   content-around   : "space-around",
   content-between  : "space-between"
 ) !default;
+
 $mod-align-self : (
   self-auto        : "auto",
   self-start       : "flex-start",
@@ -94,17 +154,16 @@ $mod-align-self : (
   self-baseline    : "baseline",
   self-stretch     : "stretch"
 ) !default;
+
 $mod-order : (
   order-first      : -1,
   order-last       : 1
 ) !default;
 
-
 // Function to create Flexual col widths on the fly
 @function flexual_MakeColWidth($col-width) {
   @return unquote((100 / $column-count) * $col-width+"%");
 }
-
 
 // Extract the flexbox modifiers.
 @mixin flexual_ExtractFlexboxModifier($mod-map, $breakpoint) {
@@ -121,18 +180,7 @@ $mod-order : (
   }
 }
 
-
-
-
-
-
-
-
-
-
-
-
-// Create a wrapper mixin to include at the most appropriate point in the cascade
+// Create a wrapper mixin to include at the most appropriate point in your sass
 @mixin doFlexual() {
 
     // Mobile first Container classes
@@ -220,13 +268,21 @@ $mod-order : (
 	$column-class : null !default;
 
 	@for $i from 1 through $column-count {
+
 		@each $breakpoint, $value in $breakpoints {
+
 			@if $breakpoint == xs {
+
 				$column-class: append($column-class, unquote('.col-#{$i}'), 'comma');
+
 			} @else {
+
 				$column-class: append($column-class, unquote('.col-#{$breakpoint}-#{$i}'), 'comma');
+
 			}
+
 		}
+
 	}
 
 	@if $use-wordpress-gallery-support {
@@ -308,15 +364,21 @@ $mod-order : (
             }
 
 			@if $use-flexbox-modifier-justify-content {
+
 				@include flexual_ExtractFlexboxModifier($mod-justify-content, $breakpoint);
+
 			}
 
 			@if $use-flexbox-modifier-justify-content {
+
 				@include flexual_ExtractFlexboxModifier($mod-align-items, $breakpoint);
+
 			}
 
 			@if $use-flexbox-modifier-justify-content {
+
 				@include flexual_ExtractFlexboxModifier($mod-align-content, $breakpoint);
+
 			}
 
 			@if $use-flexbox-modifier-justify-content {
@@ -324,7 +386,9 @@ $mod-order : (
 			}
 
 			@if $use-flexbox-modifier-justify-content {
+
 				@include flexual_ExtractFlexboxModifier($mod-order, $breakpoint);
+
 			}
 
 			@if $use-text-modifiers {
@@ -375,23 +439,33 @@ $mod-order : (
                 }
 
 				@if $use-flexbox-modifier-justify-content {
+
 					@include flexual_ExtractFlexboxModifier($mod-justify-content, $breakpoint);
+
 				}
 
 				@if $use-flexbox-modifier-justify-content {
+
 					@include flexual_ExtractFlexboxModifier($mod-align-items, $breakpoint);
+
 				}
 
 				@if $use-flexbox-modifier-justify-content {
+
 					@include flexual_ExtractFlexboxModifier($mod-align-content, $breakpoint);
+
 				}
 
 				@if $use-flexbox-modifier-justify-content {
+
 					@include flexual_ExtractFlexboxModifier($mod-align-self, $breakpoint);
+
 				}
 
 				@if $use-flexbox-modifier-justify-content {
+
 					@include flexual_ExtractFlexboxModifier($mod-order, $breakpoint);
+
 				}
 
 				@if $use-text-modifiers {
@@ -449,4 +523,3 @@ $mod-order : (
 	}
 
 }
-@include doFlexual;
